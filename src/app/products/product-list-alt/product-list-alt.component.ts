@@ -9,26 +9,27 @@ import { ProductService } from '../product.service';
   selector: 'pm-product-list',
   templateUrl: './product-list-alt.component.html'
 })
-export class ProductListAltComponent implements OnInit, OnDestroy {
+export class ProductListAltComponent
+// implements OnInit, OnDestroy here is implemented declarative pattern insted of proceduralApproach
+{
   pageTitle = 'Products';
   errorMessage = '';
   selectedProductId = 0;
-
-  products: Product[] = [];
-  sub!: Subscription;
+  products$ = this.productService.products$;
 
   constructor(private productService: ProductService) { }
 
-  ngOnInit(): void {
-    this.sub = this.productService.getProducts().subscribe({
-      next: products => this.products = products,
-      error: err => this.errorMessage = err
-    });
-  }
+  //the same issuelike in list component
+  // ngOnInit(): void {
+  //   this.sub = this.productService.getProducts().subscribe({
+  //     next: products => this.products = products,
+  //     error: err => this.errorMessage = err
+  //   });
+  // }
 
-  ngOnDestroy(): void {
-    this.sub.unsubscribe();
-  }
+  // ngOnDestroy(): void {
+  //   this.sub.unsubscribe();
+  // }
 
   onSelected(productId: number): void {
     console.log('Not yet implemented');

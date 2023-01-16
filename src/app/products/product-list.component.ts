@@ -1,36 +1,40 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-
-import { Subscription } from 'rxjs';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { ProductCategory } from '../product-categories/product-category';
-
-import { Product } from './product';
 import { ProductService } from './product.service';
 
 @Component({
   templateUrl: './product-list.component.html',
-  styleUrls: ['./product-list.component.css']
+  styleUrls: ['./product-list.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProductListComponent implements OnInit, OnDestroy {
+export class ProductListComponent
+//  implements OnInit, OnDestroy  not need because declarative pattern
+{
   pageTitle = 'Product List';
   errorMessage = '';
   categories: ProductCategory[] = [];
-
-  products: Product[] = [];
-  sub!: Subscription;
+  products$ = this.productService.products$;
+  // sub!: Subscription; don't need because we have async obsrvable in pipe
 
   constructor(private productService: ProductService) { }
 
-  ngOnInit(): void {
-    this.sub = this.productService.getProducts()
-      .subscribe({
-        next: products => this.products = products,
-        error: err => this.errorMessage = err
-      });
-  }
+  // declaration of observable products are assigned to product$ variable
+  // proceduralApproach can be still useful for reactive programming
+  // actual is used declaritive pattern insted of life cycle
+  // ngOnInit(): void {
+  //   this.products$ = this.productService.getProducts()
+  //     .pipe(
+  //       catchError(error => {
+  //         this.errorMessage = error;
+  //         return EMPTY;
+  //       })
+  //     )
+  // }
 
-  ngOnDestroy(): void {
-    this.sub.unsubscribe();
-  }
+  //unsubscribe is usefull when we have subscription insted of async pipe
+  // ngOnDestroy(): void {
+  //   this.sub.unsubscribe();
+  // }
 
   onAdd(): void {
     console.log('Not yet implemented');
