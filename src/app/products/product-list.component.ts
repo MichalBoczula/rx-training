@@ -8,12 +8,13 @@ import { ProductService } from './product.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProductListComponent
-//  implements OnInit, OnDestroy  not need because declarative pattern
+//  implements OnInit 
+//  OnDestroy  not need because declarative pattern
 {
   pageTitle = 'Product List';
   errorMessage = '';
   categories: ProductCategory[] = [];
-  products$ = this.productService.products$;
+  products$ = this.productService.productsWithCategories$;
   // sub!: Subscription; don't need because we have async obsrvable in pipe
 
   constructor(private productService: ProductService) { }
@@ -22,13 +23,7 @@ export class ProductListComponent
   // proceduralApproach can be still useful for reactive programming
   // actual is used declaritive pattern insted of life cycle
   // ngOnInit(): void {
-  //   this.products$ = this.productService.getProducts()
-  //     .pipe(
-  //       catchError(error => {
-  //         this.errorMessage = error;
-  //         return EMPTY;
-  //       })
-  //     )
+  //   this.productService.productsWithCategories$.subscribe( ele => console.log(ele));
   // }
 
   //unsubscribe is usefull when we have subscription insted of async pipe
