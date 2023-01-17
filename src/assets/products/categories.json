@@ -1,17 +1,17 @@
 [
-    {
+  {
     "id": 1,
     "name": "Garden",
     "description": "Garden desc"
-    },
-    {
+  },
+  {
     "id": 3,
     "name": "Tool",
     "description": "Tool desc"
-    },
-    {
+  },
+  {
     "id": 5,
     "name": "Gaming",
     "description": "Gaming desc"
-    }
-  ]
+  }
+]
