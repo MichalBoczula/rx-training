@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-
-import { catchError, combineLatest, map, Observable, tap, throwError } from 'rxjs';
-
+import { BehaviorSubject, catchError, combineLatest, map, merge, Observable, scan, Subject, tap, throwError } from 'rxjs';
 import { Product } from './product';
 import { ProductCategoryService } from '../product-categories/product-category.service';
 
@@ -15,7 +13,7 @@ export class ProductService {
 
   products$ = this.http.get<Product[]>(this.productsUrl)
     .pipe(
-      map(products => 
+      map(products =>
         products.map(prod => ({
           ...prod,
           price: prod.price ? prod.price * 1.5 : 0,
@@ -29,15 +27,39 @@ export class ProductService {
     this.products$,
     this.productCategoryService.productCategories$
   ]).pipe(
-    map(([products, categories]) => 
+    map(([products, categories]) =>
       products.map(prod => ({
         ...prod,
-        price: prod.price? prod.price * 1.5 : 0,
+        price: prod.price ? prod.price * 1.5 : 0,
         category: categories.find(x => x.id === prod.categoryId)?.name,
         searchKey: [prod.productName]
       } as Product))
     )
   );
+
+  private selectedProductSubject = new BehaviorSubject<number>(0);
+  selectedProductAction$ = this.selectedProductSubject.asObservable();
+
+  selectedProduct$ = combineLatest([
+    this.productsWithCategories$,
+    this.selectedProductAction$
+  ])
+    .pipe(
+      map(([products, selectedProductId]) =>
+        products.find(x => x.id === selectedProductId)),
+    );
+
+  private addedProductSubject = new Subject<Product>();
+  addedProductAction$ = this.addedProductSubject.asObservable();
+
+  productsWithAddedOne$ = merge(
+    this.productsWithCategories$,
+    this.addedProductAction$
+  )
+    .pipe(
+      tap(x => console.log(x)),
+      scan((acc, value) => value instanceof Array ? [...value] : [...acc, value], [] as Product[])
+    )
 
   constructor(private http: HttpClient, private productCategoryService: ProductCategoryService) { }
 
@@ -49,9 +71,18 @@ export class ProductService {
       description: 'Our new product',
       price: 8.9,
       categoryId: 3,
-      // category: 'Toolbox',
+      category: 'Toolbox',
       quantityInStock: 30
     };
+  }
+
+  addProduct(addedProduct?: Product): void {
+    addedProduct = addedProduct || this.fakeProduct();
+    this.addedProductSubject.next(addedProduct);
+  }
+
+  selectedProductChange(selectedProductId: number): void {
+    this.selectedProductSubject.next(selectedProductId);
   }
 
   private handleError(err: HttpErrorResponse): Observable<never> {

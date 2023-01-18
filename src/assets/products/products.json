@@ -1,6 +1,6 @@
 [
     {
-        "productId": 1,
+        "id": 1,
         "productName": "Leaf Rake",
         "productCode": "GDN-0011",
         "releaseDate": "March 19, 2021",
@@ -12,7 +12,7 @@
         "quantityInStock": 15
     },
     {
-        "productId": 2,
+        "id": 2,
         "productName": "Garden Cart",
         "productCode": "GDN-0023",
         "releaseDate": "March 18, 2021",
@@ -24,7 +24,7 @@
         "quantityInStock": 2
     },
     {
-        "productId": 3,
+        "id": 3,
         "productName": "Hammer",
         "productCode": "TBX-0048",
         "releaseDate": "May 21, 2021",
@@ -36,7 +36,7 @@
         "quantityInStock": 8
     },
     {
-        "productId": 4,
+        "id": 4,
         "productName": "Saw",
         "productCode": "TBX-0022",
         "releaseDate": "May 15, 2021",
@@ -48,7 +48,7 @@
         "quantityInStock": 6
     },
     {
-        "productId": 5,
+        "id": 5,
         "productName": "Video Game Controller",
         "productCode": "GMG-0042",
         "releaseDate": "October 15, 2020",

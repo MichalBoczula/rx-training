@@ -7,13 +7,13 @@
     <!-- used async (automaticlly subscribe observable) pipe insted of approach with subscribe and unsubscribe proceduralApproach-->
     <div class="list-group">
       <button type="button" class="list-group-item" *ngFor="let product of products"
-        [ngClass]="{ active: product?.id === selectedProductId }" (click)="onSelected(product.id)">
-        {{ product.productName }} ({{ product.categoryId }})
+        [ngClass]="{ active: product?.id === (selectedProduct$ | async)?.id }" (click)="onSelected(product.id)">
+        {{ product.productName }} ({{ product.category }})
       </button>
     </div>
   </div>
 </div>
 
-<div class="alert alert-danger" *ngIf="errorMessage">
+<div class="alert alert-danger" *ngIf="errorMessageAction$ | async as errorMessage">
   {{ errorMessage }}
 </div>
