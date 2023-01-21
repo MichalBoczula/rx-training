@@ -1,15 +1,50 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
-import { throwError, Observable } from 'rxjs';
+import { throwError, Observable, of, map, concatMap, tap, mergeMap, switchMap } from 'rxjs';
+import { Supplier } from './supplier';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SupplierService {
-  suppliersUrl = 'api/suppliers';
+  suppliersUrl = 'http://localhost:4201/api/suppliers';
 
-  constructor(private http: HttpClient) { }
+  //wait to finsish first observable to start next one
+  //Great when order has matter
+  supliersConcatMap$ = of(1, 5, 8)
+    .pipe(
+      tap(x => console.log('concat map obj' + x)),
+      concatMap(id => this.http.get<Supplier>(`${this.suppliersUrl}/${id}`))
+    );
+
+  //process observable paralle an merge result
+  //The Best One order has NOT matter
+  supliersMergeMap$ = of(1, 5, 8)
+    .pipe(
+      tap(x => console.log('merge map obj' + x)),
+      mergeMap(id => this.http.get<Supplier>(`${this.suppliersUrl}/${id}`))
+    );
+
+  //unsubscribe from prior inner observable to execute new one
+  //few use case :(
+  supliersSwitchMap$ = of(1, 5, 8)
+    .pipe(
+      tap(x => console.log('switch map obj' + x)),
+      switchMap(id => this.http.get<Supplier>(`${this.suppliersUrl}/${id}`))
+    );
+
+  constructor(private http: HttpClient) {
+    // this.supliersConcatMap$.subscribe(
+    //   item => console.log('concat map result ' + item.name)
+    // );
+    // this.supliersMergeMap$.subscribe(
+    //   item => console.log('merge map result ' + item.name)
+    // )
+    this.supliersSwitchMap$.subscribe(
+      item => console.log('switch map result ' + item.name)
+    )
+  }
 
   private handleError(err: HttpErrorResponse): Observable<never> {
     // in a real world app, we may send the server to some remote logging infrastructure

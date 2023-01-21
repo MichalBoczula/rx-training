@@ -1,15 +1,16 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { BehaviorSubject, catchError, combineLatest, map, merge, Observable, scan, Subject, tap, throwError } from 'rxjs';
+import { BehaviorSubject, catchError, combineLatest, map, merge, Observable, scan, shareReplay, Subject, tap, throwError } from 'rxjs';
 import { Product } from './product';
 import { ProductCategoryService } from '../product-categories/product-category.service';
+import { SupplierService } from '../suppliers/supplier.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductService {
   private productsUrl = 'http://localhost:4201/api/products';
-  private suppliersUrl = 'api/suppliers';
+  private suppliersUrl = 'http://localhost:4201/api/suppliers';
 
   products$ = this.http.get<Product[]>(this.productsUrl)
     .pipe(
@@ -33,7 +34,8 @@ export class ProductService {
         price: prod.price ? prod.price * 1.5 : 0,
         category: categories.find(x => x.id === prod.categoryId)?.name,
         searchKey: [prod.productName]
-      } as Product))
+      } as Product)),
+      shareReplay(1)
     )
   );
 
@@ -47,6 +49,7 @@ export class ProductService {
     .pipe(
       map(([products, selectedProductId]) =>
         products.find(x => x.id === selectedProductId)),
+      shareReplay(1)
     );
 
   private addedProductSubject = new Subject<Product>();
@@ -61,7 +64,9 @@ export class ProductService {
       scan((acc, value) => value instanceof Array ? [...value] : [...acc, value], [] as Product[])
     )
 
-  constructor(private http: HttpClient, private productCategoryService: ProductCategoryService) { }
+  constructor(private http: HttpClient,
+    private productCategoryService: ProductCategoryService,
+    private supplierService: SupplierService) { }
 
   private fakeProduct(): Product {
     return {
