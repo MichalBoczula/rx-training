@@ -27,7 +27,10 @@ export class SupplierService {
     );
 
   //unsubscribe from prior inner observable to execute new one
-  //few use case :(
+  //required almost the same time of executino for example two get request
+  //because when first one (outer) emit next value before inner one
+  //than anuglar switch observable to first one 
+  //and don't care about second observable result 
   supliersSwitchMap$ = of(1, 5, 8)
     .pipe(
       tap(x => console.log('switch map obj' + x)),
